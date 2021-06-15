@@ -1,12 +1,9 @@
 package states;
 
-import js.html.Console;
-import com.gEngine.display.Sprite;
 import format.tmx.Data.TmxTileLayer;
 import com.collision.platformer.CollisionBox;
 import helpers.Tray;
 import com.gEngine.display.extra.TileMapDisplay;
-import com.collision.platformer.Sides;
 import com.framework.utils.XboxJoystick;
 import com.framework.utils.VirtualGamepad;
 import format.tmx.Data.TmxObject;
@@ -14,6 +11,7 @@ import kha.input.KeyCode;
 import com.framework.utils.Input;
 import com.collision.platformer.CollisionEngine;
 import gameObjects.Princess;
+import gameObjects.Fireball;
 import com.loading.basicResources.TilesheetLoader;
 import com.loading.basicResources.SpriteSheetLoader;
 import com.gEngine.display.Layer;
@@ -24,22 +22,24 @@ import com.loading.Resources;
 import com.framework.utils.State;
 
 class GameState extends State {
-	var worldMap:Tilemap;
-	var princess:Princess;
-	var simulationLayer:Layer;
-	var touchJoystick:VirtualGamepad;
-	var tray:helpers.Tray;
-	var castleMap:TileMapDisplay;
-	var room:String;
-	var winZone:CollisionBox;
+	var worldMap: Tilemap;
+	var princess: Princess;
+	var dragon: Fireball;
+
+	var simulationLayer: Layer;
+	var touchJoystick: VirtualGamepad;
+	var tray: helpers.Tray;
+	var castleMap: TileMapDisplay;
+	var room: String;
+	var winZone: CollisionBox;
 
 
-	public function new(room:String, fromRoom:String = null) {
+	public function new(room: String, fromRoom: String = null) {
 		super();
 		this.room=room;
 	}
 
-	override function load(resources:Resources) {
+	override function load(resources: Resources) {
 		resources.add(new DataLoader("testRoom_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
 
@@ -52,6 +52,17 @@ class GameState extends State {
 			new Sequence("idle", [6]),
 			new Sequence("wallGrab", [5])
 		]));
+		atlas.add(new SpriteSheetLoader("dragon", 30, 28, 0, [
+			new Sequence("idle", [0]),
+			new Sequence("attack", [1, 2, 3])
+		]));
+		atlas.add(new SpriteSheetLoader("phoenix", 41, 21, 0, [
+			new Sequence("idle", [0, 1, 2, 3, 4, 5, 6])
+		]));
+		atlas.add(new SpriteSheetLoader("fireball", 32, 13, 0, [
+			new Sequence("moving", [0, 1, 2, 3, 4])
+		]));
+
 		resources.add(atlas);
 	}
 
@@ -83,48 +94,48 @@ class GameState extends State {
 		gamepad.notify(princess.onAxisChange, princess.onButtonChange);
 	}
 
-	function parseTileLayers(layerTilemap:Tilemap, tileLayer:TmxTileLayer) {
+	function parseTileLayers(layerTilemap: Tilemap, tileLayer: TmxTileLayer) {
 		if (!tileLayer.properties.exists("noCollision")) {
 			layerTilemap.createCollisions(tileLayer);
 		}
+
 		simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
-		 castleMap = layerTilemap.createDisplay(tileLayer);
-		 simulationLayer.addChild(castleMap);
+		castleMap = layerTilemap.createDisplay(tileLayer);
+		simulationLayer.addChild(castleMap);
 	}
 
-	function parseMapObjects(layerTilemap:Tilemap, object:TmxObject) {
-		if(compareName(object,"playerPosition")){
-			if(princess==null){
+	function parseMapObjects(layerTilemap: Tilemap, object: TmxObject) {
+		if (compareName(object, "playerPosition")) {
+			if (princess == null) {
 				princess = new Princess(object.x, object.y, simulationLayer);
 				addChild(princess);
 			}
-		}else
-		if(compareName(object,"winZone"))
-		{
-			winZone=new CollisionBox();
-			winZone.x=object.x;
-			winZone.y=object.y;
-			winZone.width=object.width;
-			winZone.height=object.height;
-		}else
-		if(compareName(object,"powerFlower")){
-			var sprite=new Sprite("tiles2");
-			sprite.x=object.x;
-			sprite.y=object.y-object.height;
-			sprite.timeline.gotoAndStop(1);
-			stage.addChild(sprite);
+		} else if (compareName(object, "winZone")) {
+			winZone = new CollisionBox();
+			winZone.x = object.x;
+			winZone.y = object.y;
+			winZone.width = object.width;
+			winZone.height = object.height;
+		} else if (compareName(object, "enemyPosition")) {
+			if (dragon == null) {
+				dragon = new Fireball(object.x, object.y, simulationLayer);
+				addChild(dragon);
+			}
 		}
 	}
-	inline function compareName(object:TmxObject,name:String) {
+
+	inline function compareName(object: TmxObject, name: String) {
 		return object.name.toLowerCase() == name.toLowerCase();
 	}
 
-	override function update(dt:Float) {
+	override function update(dt: Float) {
 		super.update(dt);
 
 		stage.defaultCamera().setTarget(princess.collision.x, princess.collision.y);
 
 		CollisionEngine.collide(princess.collision,worldMap.collision);
+		CollisionEngine.collide(dragon.collision,worldMap.collision);
+		
 		if(CollisionEngine.overlap(princess.collision,winZone)){
 			// changeState(new GameState("",""));
 		}
@@ -135,7 +146,7 @@ class GameState extends State {
 	}
 
 	#if DEBUGDRAW
-	override function draw(framebuffer:kha.Canvas) {
+	override function draw(framebuffer: kha.Canvas) {
 		super.draw(framebuffer);
 		var camera = stage.defaultCamera();
 		CollisionEngine.renderDebug(framebuffer, camera);
