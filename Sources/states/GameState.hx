@@ -1,5 +1,10 @@
 package states;
 
+import js.html.Console;
+import com.collision.platformer.CollisionGroup;
+import gameObjects.Fireball;
+import com.collision.platformer.ICollider;
+import gameObjects.Dragon;
 import format.tmx.Data.TmxTileLayer;
 import com.collision.platformer.CollisionBox;
 import helpers.Tray;
@@ -11,7 +16,6 @@ import kha.input.KeyCode;
 import com.framework.utils.Input;
 import com.collision.platformer.CollisionEngine;
 import gameObjects.Princess;
-import gameObjects.Fireball;
 import com.loading.basicResources.TilesheetLoader;
 import com.loading.basicResources.SpriteSheetLoader;
 import com.gEngine.display.Layer;
@@ -24,15 +28,18 @@ import com.framework.utils.State;
 class GameState extends State {
 	var worldMap: Tilemap;
 	var princess: Princess;
-	var dragon: Fireball;
+	var dragon: Dragon;
+	
+	var winZone: CollisionBox;
+	var deathZone: CollisionBox;
+	var dangerZone: CollisionBox;
+	var fireballCollisionGroup = new CollisionGroup();
 
 	var simulationLayer: Layer;
 	var touchJoystick: VirtualGamepad;
 	var tray: helpers.Tray;
 	var castleMap: TileMapDisplay;
 	var room: String;
-	var winZone: CollisionBox;
-
 
 	public function new(room: String, fromRoom: String = null) {
 		super();
@@ -86,7 +93,6 @@ class GameState extends State {
 		touchJoystick.addKeyButton(XboxJoystick.UP_DPAD, KeyCode.Up);
 		touchJoystick.addKeyButton(XboxJoystick.A, KeyCode.Space);
 		touchJoystick.addKeyButton(XboxJoystick.X, KeyCode.X);
-		touchJoystick.addKeyButton(XboxJoystick.Y, KeyCode.G);
 		
 		touchJoystick.notify(princess.onAxisChange, princess.onButtonChange);
 
@@ -105,22 +111,41 @@ class GameState extends State {
 	}
 
 	function parseMapObjects(layerTilemap: Tilemap, object: TmxObject) {
-		if (compareName(object, "playerPosition")) {
-			if (princess == null) {
-				princess = new Princess(object.x, object.y, simulationLayer);
-				addChild(princess);
-			}
-		} else if (compareName(object, "winZone")) {
-			winZone = new CollisionBox();
-			winZone.x = object.x;
-			winZone.y = object.y;
-			winZone.width = object.width;
-			winZone.height = object.height;
-		} else if (compareName(object, "enemyPosition")) {
-			if (dragon == null) {
-				dragon = new Fireball(object.x, object.y, simulationLayer);
-				addChild(dragon);
-			}
+		switch (object.name.toLowerCase()) {
+			case "playerposition":
+				if (princess == null) {
+					princess = new Princess(object.x, object.y, simulationLayer);
+					addChild(princess);
+				}
+
+			case "enemyposition":
+				if (dragon == null) {
+					dragon = new Dragon(object.x, object.y, simulationLayer);
+					addChild(dragon);
+				}
+
+			case "deathzone":
+				deathZone = new CollisionBox();
+				deathZone.x = object.x;
+				deathZone.y = object.y;
+				deathZone.width = object.width;
+				deathZone.height = object.height;
+
+			case "dangerzone":
+				dangerZone = new CollisionBox();
+				dangerZone.x = object.x;
+				dangerZone.y = object.y;
+				dangerZone.width = object.width;
+				dangerZone.height = object.height;
+				dangerZone.staticObject = true;
+
+			case "winzone":
+				winZone = new CollisionBox();
+				winZone.x = object.x;
+				winZone.y = object.y;
+				winZone.width = object.width;
+				winZone.height = object.height;
+
 		}
 	}
 
@@ -133,16 +158,33 @@ class GameState extends State {
 
 		stage.defaultCamera().setTarget(princess.collision.x, princess.collision.y);
 
-		CollisionEngine.collide(princess.collision,worldMap.collision);
-		CollisionEngine.collide(dragon.collision,worldMap.collision);
-		
-		if(CollisionEngine.overlap(princess.collision,winZone)){
-			// changeState(new GameState("",""));
+		CollisionEngine.collide(princess.collision, worldMap.collision);
+		CollisionEngine.collide(dragon.collision, worldMap.collision);
+
+		if (CollisionEngine.overlap(princess.collision, dangerZone)) {
+			var shouldThrowFireball = dragon.attack(princess);
+			dragon.increaseTimeSinceLastFireball(dt);
+
+			if (shouldThrowFireball) {
+				dragon.resetTimeSinceLastFireball();
+				var fireball = new Fireball(dragon.x, dragon.y, simulationLayer, fireballCollisionGroup);
+				addChild(fireball);
+			}
 		}
 
-		//tray.setContactPosition(princess.collision.x + princess.collision.width / 2, princess.collision.y + princess.collision.height + 1, Sides.BOTTOM);
-		//tray.setContactPosition(princess.collision.x + princess.collision.width + 1, princess.collision.y + princess.collision.height / 2, Sides.RIGHT);
-		//tray.setContactPosition(princess.collision.x-1, princess.collision.y+princess.collision.height/2, Sides.LEFT);
+		CollisionEngine.overlap(princess.collision, fireballCollisionGroup, (fireballC: ICollider, princessC: ICollider) -> {
+			var fireball: Fireball = cast fireballC.userData;
+			fireball.destroy();
+			princess.takeDamage();
+
+			if (princess.isDead()) {
+				changeState(new GameState("",""));
+			}
+		});
+		
+		if (CollisionEngine.overlap(princess.collision, deathZone)) {
+			changeState(new GameState("",""));
+		}
 	}
 
 	#if DEBUGDRAW

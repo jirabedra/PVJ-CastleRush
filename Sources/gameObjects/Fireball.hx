@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.collision.platformer.CollisionGroup;
 import com.gEngine.display.Layer;
 import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;
@@ -8,8 +9,9 @@ import com.framework.utils.Entity;
 class Fireball extends Entity {
 	public var display: Sprite;
 	public var collision: CollisionBox;
+	private var time:Float = 0;
 
-	public function new(x: Float, y: Float, layer: Layer) {
+	public function new(x: Float, y: Float, layer: Layer, collisionGroup: CollisionGroup) {
 		super();
 		display = new Sprite("fireball");
 		display.smooth = false;
@@ -26,14 +28,19 @@ class Fireball extends Entity {
 
 		collision.userData = this;
 
-		collision.accelerationX = 1200;
-		collision.maxVelocityX = 500;
+		collision.accelerationX = -800;
 		collision.dragX = 0.9;
+		collisionGroup.add(collision);
 	}
 
 	override function update(dt: Float) {
 		super.update(dt);
+		time += dt;
 		collision.update(dt);
+
+		if (time > 4) {
+			die();
+		}
 	}
 
 	override function render() {
@@ -43,5 +50,11 @@ class Fireball extends Entity {
 
 		display.x = collision.x;
 		display.y = collision.y;
+	}
+
+	override function destroy() {
+		super.destroy();
+		display.removeFromParent();
+		collision.removeFromParent();
 	}
 }

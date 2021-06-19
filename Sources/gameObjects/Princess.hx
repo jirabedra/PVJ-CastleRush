@@ -12,11 +12,22 @@ class Princess extends Entity {
 	public var collision: CollisionBox;
 
 	var maxSpeed = 200;
+	var livesRemaining = 3;
 
 	var allowDoubleJump = false;
 	var lastWallGrabing: Float = 0;
 	var sideTouching: Int;
 	var gravityScale: Int = 1;
+
+	public var x(get, null): Float;
+	private inline function get_x(): Float{
+		return display.x;
+	}
+
+	public var y(get, null): Float;
+	private inline function get_y(): Float{
+		return display.y;
+	}
 
 	public function new(x: Float, y: Float, layer: Layer) {
 		super();
@@ -79,8 +90,6 @@ class Princess extends Entity {
 
 	}
 
-	
-
 	public function onButtonChange(id: Int, value: Float) {
 		switch (id) {
 			case XboxJoystick.LEFT_DPAD:
@@ -127,8 +136,12 @@ class Princess extends Entity {
 	inline function isWallGrabing(): Bool {
 		return !collision.isTouching(Sides.BOTTOM) && (collision.isTouching(Sides.LEFT) || collision.isTouching(Sides.RIGHT));
 	}
-
-	public function onAxisChange(id: Int, value: Float) {
-
+	
+	public inline function takeDamage() {
+		if (--livesRemaining == 0) {
+			die();
+		}
 	}
+
+	public function onAxisChange(id: Int, value: Float) {}
 }
