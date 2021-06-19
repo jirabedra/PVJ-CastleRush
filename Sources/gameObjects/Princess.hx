@@ -13,6 +13,7 @@ class Princess extends Entity {
 
 	var maxSpeed = 200;
 
+	var allowDoubleJump = false;
 	var lastWallGrabing: Float = 0;
 	var sideTouching: Int;
 	var gravityScale: Int = 1;
@@ -106,6 +107,7 @@ class Princess extends Entity {
 				if (value == 1) {
 					if (collision.isTouching(Sides.BOTTOM)) {
 						collision.velocityY = -1000;
+						allowDoubleJump = true;
 					} else if (isWallGrabing() || lastWallGrabing < 0.2) {
 						if (sideTouching== Sides.LEFT) {
 							collision.velocityX = 500;
@@ -113,24 +115,13 @@ class Princess extends Entity {
 							collision.velocityX = -500;
 						}
 						collision.velocityY = -1000;
+					} else if (allowDoubleJump) {
+						collision.velocityY -= 800;
+						allowDoubleJump = false;
 					}
 				}
 
 		}
-
-		// if (id == XboxJoystick.Y) {
-		// 	if (value == 1) {
-		// 		gravityScale *= -1;
-
-		// 		display.scaleY = gravityScale;
-		// 		collision.accelerationY = 2000*gravityScale;
-		// 		collision.maxVelocityY = 800*gravityScale;
-
-		// 		if (gravityScale == -1)
-		// 			display.offsetY = -display.height()*gravityScale;
-		// 	}
-		// }
-		
 	}
 
 	inline function isWallGrabing(): Bool {
