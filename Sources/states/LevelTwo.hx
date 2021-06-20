@@ -1,11 +1,10 @@
 package states;
 
+import js.html.Console;
+import gameObjects.Phoenix;
 import com.loading.basicResources.FontLoader;
 import com.gEngine.display.Text;
 import com.collision.platformer.Sides;
-import com.collision.platformer.CollisionGroup;
-import gameObjects.Fireball;
-import gameObjects.Dragon;
 import format.tmx.Data.TmxTileLayer;
 import com.collision.platformer.CollisionBox;
 import helpers.Tray;
@@ -26,16 +25,15 @@ import com.loading.basicResources.JoinAtlas;
 import com.loading.Resources;
 import com.framework.utils.State;
 
-class FirstLevel extends State {
+class LevelTwo extends State {
 	var worldMap: Tilemap;
 	var princess: Princess;
-	var dragon: Dragon;
+	var phoenix: Phoenix;
 	var hudText: Text;
 	
 	var winZone: CollisionBox;
 	var deathZone: CollisionBox;
 	var dangerZone: CollisionBox;
-	var fireballCollisionGroup = new CollisionGroup();
 
 	var simulationLayer: Layer;
 	var touchJoystick: VirtualGamepad;
@@ -59,12 +57,8 @@ class FirstLevel extends State {
 			new Sequence("idle", [6]),
 			new Sequence("wallGrab", [5])
 		]));
-		atlas.add(new SpriteSheetLoader("dragon", 30, 28, 0, [
-			new Sequence("idle", [0]),
-			new Sequence("attack", [1, 2, 3])
-		]));
-		atlas.add(new SpriteSheetLoader("fireball", 32, 13, 0, [
-			new Sequence("moving", [0, 1, 2, 3, 4])
+		atlas.add(new SpriteSheetLoader("phoenix", 41, 21, 0, [
+			new Sequence("idle", [0, 1, 2, 3, 4, 5, 6])
 		]));
 
 		atlas.add(new FontLoader("Kenney_Thick", 20));
@@ -123,9 +117,9 @@ class FirstLevel extends State {
 				}
 
 			case "enemyposition":
-				if (dragon == null) {
-					dragon = new Dragon(object.x, object.y, simulationLayer);
-					addChild(dragon);
+				if (phoenix == null) {
+					phoenix = new Phoenix(object.x, object.y, simulationLayer);
+					addChild(phoenix);
 				}
 
 			case "deathzone":
@@ -159,41 +153,26 @@ class FirstLevel extends State {
 		stage.defaultCamera().setTarget(princess.collision.x, princess.collision.y);
 
 		CollisionEngine.collide(princess.collision, worldMap.collision);
-		CollisionEngine.collide(dragon.collision, worldMap.collision);
+		CollisionEngine.collide(phoenix.collision, worldMap.collision);
 
 		if (CollisionEngine.overlap(princess.collision, dangerZone)) {
-			var shouldThrowFireball = dragon.attack(princess);
-			dragon.increaseTimeSinceLastFireball(dt);
-
-			if (shouldThrowFireball) {
-				dragon.resetTimeSinceLastFireball();
-				var fireball = new Fireball(dragon.x, dragon.y, simulationLayer, fireballCollisionGroup);
-				addChild(fireball);
-			}
+			phoenix.follow(princess);
 		}
 
-		CollisionEngine.collide(princess.collision, dragon.collision, (princessC, dragonC) -> {
-			if (dragon.collision.isTouching(Sides.TOP)) {
-				dragon.die();
-			}
-		});
+		if (CollisionEngine.collide(princess.collision, phoenix.collision)) {
+			if (phoenix.collision.isTouching(Sides.TOP)) {
+				phoenix.die();
+			} else if (phoenix.collision.isTouching(Sides.LEFT) || phoenix.collision.isTouching(Sides.RIGHT)) {
+				princess.takeDamage(dt);
 
-		CollisionEngine.overlap(princess.collision, fireballCollisionGroup, (fireballC, princessC) -> {
-			var fireball: Fireball = cast fireballC.userData;
-			fireball.destroy();
-			princess.takeDamage(dt);
-
-			if (princess.isDead()) {
-				changeState(new GameOver());
+				if (princess.isDead()) {
+					changeState(new GameOver());
+				}
 			}
-		});
+		}
 		
 		if (CollisionEngine.overlap(princess.collision, deathZone)) {
 			changeState(new GameOver());
-		}
-
-		if (CollisionEngine.overlap(princess.collision, winZone)) {
-			changeState(new LevelTwo());
 		}
 
 		hudText.x = stage.defaultCamera().eye.x - stage.defaultCamera().screenWidth() / 2 + 48;

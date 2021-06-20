@@ -1,6 +1,5 @@
 package gameObjects;
 
-import com.collision.platformer.CollisionGroup;
 import com.collision.platformer.Sides;
 import com.gEngine.display.Layer;
 import com.collision.platformer.CollisionBox;

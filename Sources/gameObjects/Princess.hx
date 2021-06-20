@@ -14,6 +14,7 @@ class Princess extends Entity {
 
 	var maxSpeed = 200;
 
+	var lastDamageTaken: Float = 0;
 	var allowDoubleJump = false;
 	var lastWallGrabing: Float = 0;
 	var sideTouching: Int;
@@ -137,10 +138,16 @@ class Princess extends Entity {
 		return !collision.isTouching(Sides.BOTTOM) && (collision.isTouching(Sides.LEFT) || collision.isTouching(Sides.RIGHT));
 	}
 	
-	public inline function takeDamage() {
-		if (--livesRemaining == 0) {
-			die();
+	public inline function takeDamage(dt: Float) {
+		lastDamageTaken += dt;
+		
+		if (livesRemaining == 3 || lastDamageTaken > 0.3) {
+			lastDamageTaken = 0;
+			if (--livesRemaining == 0) {
+				die();
+			}
 		}
+
 	}
 
 	public function onAxisChange(id: Int, value: Float) {}

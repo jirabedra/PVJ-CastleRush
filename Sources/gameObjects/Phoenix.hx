@@ -1,5 +1,6 @@
 package gameObjects;
 
+import kha.math.FastVector2;
 import com.gEngine.display.Layer;
 import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;
@@ -8,6 +9,16 @@ import com.framework.utils.Entity;
 class Phoenix extends Entity {
 	public var display: Sprite;
 	public var collision: CollisionBox;
+
+	public var x(get, null): Float;
+	private inline function get_x(): Float{
+		return display.x;
+	}
+
+	public var y(get, null): Float;
+	private inline function get_y(): Float{
+		return display.y;
+	}
 
 	public function new(x: Float, y: Float, layer: Layer) {
 		super();
@@ -24,10 +35,6 @@ class Phoenix extends Entity {
 		collision.y = y;
 
 		collision.userData = this;
-
-		collision.accelerationY = 2000;
-		collision.maxVelocityX = 500;
-		collision.maxVelocityY = 800;
 		collision.dragX = 0.9;
 	}
 
@@ -43,5 +50,17 @@ class Phoenix extends Entity {
 
 		display.x = collision.x;
 		display.y = collision.y;
+	}
+
+	public function follow(player: Princess) {
+		var dx = player.x - x;
+		var dir = new FastVector2(dx / Math.abs(dx), 0);
+		collision.accelerationX = dir.x * 100;
+	}
+
+	override function destroy() {
+		super.destroy();
+		display.removeFromParent();
+		collision.removeFromParent();
 	}
 }
