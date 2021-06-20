@@ -1,6 +1,5 @@
 package gameObjects;
 
-import com.collision.platformer.Sides;
 import com.gEngine.display.Layer;
 import com.collision.platformer.CollisionBox;
 import com.gEngine.display.Sprite;
@@ -40,10 +39,7 @@ class Phoenix extends Entity {
 	override function render() {
 		var s = Math.abs(collision.velocityX / collision.maxVelocityX);
 		display.timeline.frameRate = (1 / 24) * s + (1 - s) * (1 / 10);
-		
-    if (collision.isTouching(Sides.BOTTOM) && collision.velocityX == 0) {
-			display.timeline.playAnimation("idle");
-		}
+		display.timeline.playAnimation("idle");
 
 		display.x = collision.x;
 		display.y = collision.y;

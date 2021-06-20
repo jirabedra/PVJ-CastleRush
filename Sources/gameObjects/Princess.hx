@@ -10,9 +10,9 @@ import com.framework.utils.Entity;
 class Princess extends Entity {
 	public var display: Sprite;
 	public var collision: CollisionBox;
+	public var livesRemaining = 3;
 
 	var maxSpeed = 200;
-	var livesRemaining = 3;
 
 	var allowDoubleJump = false;
 	var lastWallGrabing: Float = 0;
@@ -37,7 +37,7 @@ class Princess extends Entity {
 		collision = new CollisionBox();
 		collision.width = display.width();
 		collision.height = display.height();
-		display.pivotX = display.width()*0.5;
+		display.pivotX = display.width() * 0.5;
 		
 		display.scaleX = display.scaleY = 1;
 		collision.x = x;

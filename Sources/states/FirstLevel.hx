@@ -1,9 +1,10 @@
 package states;
 
-import js.html.Console;
+import com.loading.basicResources.FontLoader;
+import com.gEngine.display.Text;
+import com.collision.platformer.Sides;
 import com.collision.platformer.CollisionGroup;
 import gameObjects.Fireball;
-import com.collision.platformer.ICollider;
 import gameObjects.Dragon;
 import format.tmx.Data.TmxTileLayer;
 import com.collision.platformer.CollisionBox;
@@ -25,10 +26,11 @@ import com.loading.basicResources.JoinAtlas;
 import com.loading.Resources;
 import com.framework.utils.State;
 
-class GameState extends State {
+class FirstLevel extends State {
 	var worldMap: Tilemap;
 	var princess: Princess;
 	var dragon: Dragon;
+	var hudText: Text;
 	
 	var winZone: CollisionBox;
 	var deathZone: CollisionBox;
@@ -70,6 +72,8 @@ class GameState extends State {
 			new Sequence("moving", [0, 1, 2, 3, 4])
 		]));
 
+		atlas.add(new FontLoader("Kenney_Thick", 20));
+
 		resources.add(atlas);
 	}
 
@@ -82,8 +86,13 @@ class GameState extends State {
 		worldMap.init(parseTileLayers, parseMapObjects);
 
 		tray = new Tray(castleMap);
-		stage.defaultCamera().limits(16*2, 0, worldMap.widthIntTiles * 16 - 4*16, worldMap.heightInTiles * 16 );
+		stage.defaultCamera().limits(16*2, 0, worldMap.widthIntTiles * 16 - 4*16, worldMap.heightInTiles * 16);
 		createTouchJoystick();
+
+		hudText = new Text("Kenney_Thick");
+		hudText.x = 64;
+		hudText.y = 48;
+		stage.addChild(hudText);
 	}
 
 	function createTouchJoystick() {
@@ -149,10 +158,6 @@ class GameState extends State {
 		}
 	}
 
-	inline function compareName(object: TmxObject, name: String) {
-		return object.name.toLowerCase() == name.toLowerCase();
-	}
-
 	override function update(dt: Float) {
 		super.update(dt);
 
@@ -172,19 +177,28 @@ class GameState extends State {
 			}
 		}
 
-		CollisionEngine.overlap(princess.collision, fireballCollisionGroup, (fireballC: ICollider, princessC: ICollider) -> {
+		CollisionEngine.collide(princess.collision, dragon.collision, (princessC, dragonC) -> {
+			if (dragon.collision.isTouching(Sides.TOP)) {
+				dragon.die();
+			}
+		});
+
+		CollisionEngine.overlap(princess.collision, fireballCollisionGroup, (fireballC, princessC) -> {
 			var fireball: Fireball = cast fireballC.userData;
 			fireball.destroy();
 			princess.takeDamage();
 
 			if (princess.isDead()) {
-				changeState(new GameState("",""));
+				changeState(new FirstLevel("",""));
 			}
 		});
 		
 		if (CollisionEngine.overlap(princess.collision, deathZone)) {
-			changeState(new GameState("",""));
+			changeState(new FirstLevel("",""));
 		}
+
+		hudText.x = stage.defaultCamera().eye.x - stage.defaultCamera().screenWidth() / 2 + 48;
+		hudText.text = "LIVES REMAINING " + princess.livesRemaining;
 	}
 
 	#if DEBUGDRAW

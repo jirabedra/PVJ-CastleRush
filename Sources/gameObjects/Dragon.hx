@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.collision.platformer.CollisionGroup;
 import com.collision.platformer.Sides;
 import com.gEngine.display.Layer;
 import com.collision.platformer.CollisionBox;
@@ -43,7 +44,7 @@ class Dragon extends Entity {
 		collision.maxVelocityX = 500;
 		collision.maxVelocityY = 800;
 		collision.dragX = 0.9;
-		collision.staticObject = false;
+		collision.staticObject = true;
 	}
 
 	override function update(dt: Float) {
@@ -67,6 +68,10 @@ class Dragon extends Entity {
 	}
 
 	public inline function attack(target: Princess): Bool {
+		if (isDead()) {
+			return false;
+		}
+
 		isAttacking = true;
 		return !hasThrownFirstFireball || timeSinceLastFireball > 1.5;
 	}
@@ -78,5 +83,11 @@ class Dragon extends Entity {
 
 	public inline function resetTimeSinceLastFireball() {
 		timeSinceLastFireball = 0;
+	}
+
+	override function destroy() {
+		super.destroy();
+		display.removeFromParent();
+		collision.removeFromParent();
 	}
 }
