@@ -138,7 +138,7 @@ class Princess extends Entity {
 		return !collision.isTouching(Sides.BOTTOM) && (collision.isTouching(Sides.LEFT) || collision.isTouching(Sides.RIGHT));
 	}
 	
-	public inline function takeDamage(dt: Float) {
+	public inline function takeDamage(dt = 0.31) {
 		lastDamageTaken += dt;
 		
 		if (livesRemaining == 3 || lastDamageTaken > 0.3) {

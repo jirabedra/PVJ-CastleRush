@@ -1,6 +1,5 @@
 package states;
 
-import js.html.Console;
 import gameObjects.Phoenix;
 import com.loading.basicResources.FontLoader;
 import com.gEngine.display.Text;
@@ -45,7 +44,7 @@ class LevelTwo extends State {
 	}
 
 	override function load(resources: Resources) {
-		resources.add(new DataLoader("testRoom_tmx"));
+		resources.add(new DataLoader("firstLevel_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
 
 		atlas.add(new TilesheetLoader("castle_tileset_part1", 16, 16, 0));
@@ -71,7 +70,7 @@ class LevelTwo extends State {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 
-		worldMap = new Tilemap("testRoom_tmx", "castle_tileset_part1");
+		worldMap = new Tilemap("firstLevel_tmx", "castle_tileset_part1");
 		worldMap.init(parseTileLayers, parseMapObjects);
 
 		tray = new Tray(castleMap);
@@ -153,24 +152,28 @@ class LevelTwo extends State {
 		stage.defaultCamera().setTarget(princess.collision.x, princess.collision.y);
 
 		CollisionEngine.collide(princess.collision, worldMap.collision);
-		CollisionEngine.collide(phoenix.collision, worldMap.collision);
 
-		if (CollisionEngine.overlap(princess.collision, dangerZone)) {
-			phoenix.follow(princess);
-		}
-
-		if (CollisionEngine.collide(princess.collision, phoenix.collision)) {
-			if (phoenix.collision.isTouching(Sides.TOP)) {
-				phoenix.die();
-			} else if (phoenix.collision.isTouching(Sides.LEFT) || phoenix.collision.isTouching(Sides.RIGHT)) {
-				princess.takeDamage(dt);
-
-				if (princess.isDead()) {
-					changeState(new GameOver());
+		if (phoenix != null) {
+			CollisionEngine.collide(phoenix.collision, worldMap.collision);
+	
+			if (CollisionEngine.overlap(princess.collision, dangerZone)) {
+				phoenix.follow(princess);
+			}
+	
+			if (CollisionEngine.collide(princess.collision, phoenix.collision)) {
+				if (phoenix.collision.isTouching(Sides.TOP)) {
+					phoenix.die();
+					phoenix = null;
+				} else if (phoenix.collision.isTouching(Sides.LEFT) || phoenix.collision.isTouching(Sides.RIGHT)) {
+					princess.takeDamage(dt);
+	
+					if (princess.isDead()) {
+						changeState(new GameOver());
+					}
 				}
 			}
 		}
-		
+
 		if (CollisionEngine.overlap(princess.collision, deathZone)) {
 			changeState(new GameOver());
 		}

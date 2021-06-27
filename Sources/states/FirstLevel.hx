@@ -47,7 +47,7 @@ class FirstLevel extends State {
 	}
 
 	override function load(resources: Resources) {
-		resources.add(new DataLoader("testRoom_tmx"));
+		resources.add(new DataLoader("firstLevel_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
 
 		atlas.add(new TilesheetLoader("castle_tileset_part1", 16, 16, 0));
@@ -77,7 +77,7 @@ class FirstLevel extends State {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 
-		worldMap = new Tilemap("testRoom_tmx", "castle_tileset_part1");
+		worldMap = new Tilemap("firstLevel_tmx", "castle_tileset_part1");
 		worldMap.init(parseTileLayers, parseMapObjects);
 
 		tray = new Tray(castleMap);
@@ -159,34 +159,38 @@ class FirstLevel extends State {
 		stage.defaultCamera().setTarget(princess.collision.x, princess.collision.y);
 
 		CollisionEngine.collide(princess.collision, worldMap.collision);
-		CollisionEngine.collide(dragon.collision, worldMap.collision);
+		
+		if (dragon != null) {
+			CollisionEngine.collide(dragon.collision, worldMap.collision);
 
-		if (CollisionEngine.overlap(princess.collision, dangerZone)) {
-			var shouldThrowFireball = dragon.attack(princess);
-			dragon.increaseTimeSinceLastFireball(dt);
-
-			if (shouldThrowFireball) {
-				dragon.resetTimeSinceLastFireball();
-				var fireball = new Fireball(dragon.x, dragon.y, simulationLayer, fireballCollisionGroup);
-				addChild(fireball);
+			if (CollisionEngine.overlap(princess.collision, dangerZone)) {
+				var shouldThrowFireball = dragon.attack(princess);
+				dragon.increaseTimeSinceLastFireball(dt);
+	
+				if (shouldThrowFireball) {
+					dragon.resetTimeSinceLastFireball();
+					var fireball = new Fireball(dragon.x, dragon.y, simulationLayer, fireballCollisionGroup);
+					addChild(fireball);
+				}
 			}
+	
+			CollisionEngine.collide(princess.collision, dragon.collision, (princessC, dragonC) -> {
+				if (dragon.collision.isTouching(Sides.TOP)) {
+					dragon.die();
+					dragon = null;
+				}
+			});
+	
+			CollisionEngine.overlap(princess.collision, fireballCollisionGroup, (fireballC, princessC) -> {
+				var fireball: Fireball = cast fireballC.userData;
+				fireball.destroy();
+				princess.takeDamage();
+	
+				if (princess.isDead()) {
+					changeState(new GameOver());
+				}
+			});
 		}
-
-		CollisionEngine.collide(princess.collision, dragon.collision, (princessC, dragonC) -> {
-			if (dragon.collision.isTouching(Sides.TOP)) {
-				dragon.die();
-			}
-		});
-
-		CollisionEngine.overlap(princess.collision, fireballCollisionGroup, (fireballC, princessC) -> {
-			var fireball: Fireball = cast fireballC.userData;
-			fireball.destroy();
-			princess.takeDamage(dt);
-
-			if (princess.isDead()) {
-				changeState(new GameOver());
-			}
-		});
 		
 		if (CollisionEngine.overlap(princess.collision, deathZone)) {
 			changeState(new GameOver());
