@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import com.collision.platformer.Sides;
 import com.gEngine.display.Layer;
 import com.collision.platformer.CollisionBox;
@@ -87,5 +88,6 @@ class Dragon extends Entity {
 	override function destroy() {
 		super.destroy();
 		display.removeFromParent();
+		SoundManager.playFx("dragon_death_fx");
 	}
 }

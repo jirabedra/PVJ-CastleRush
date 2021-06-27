@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import com.collision.platformer.Sides;
 import com.framework.utils.XboxJoystick;
 import com.gEngine.display.Layer;
@@ -88,7 +89,6 @@ class Princess extends Entity {
 
 		display.x = collision.x;
 		display.y = collision.y;
-
 	}
 
 	public function onButtonChange(id: Int, value: Float) {
@@ -117,8 +117,10 @@ class Princess extends Entity {
 				if (value == 1) {
 					if (collision.isTouching(Sides.BOTTOM)) {
 						collision.velocityY = -1000;
+						SoundManager.playFx("jump_fx");
 						allowDoubleJump = true;
 					} else if (isWallGrabing() || lastWallGrabing < 0.2) {
+						SoundManager.playFx("jump_fx");
 						if (sideTouching== Sides.LEFT) {
 							collision.velocityX = 500;
 						} else {
@@ -127,6 +129,7 @@ class Princess extends Entity {
 						collision.velocityY = -1000;
 					} else if (allowDoubleJump) {
 						collision.velocityY -= 800;
+						SoundManager.playFx("jump_fx");
 						allowDoubleJump = false;
 					}
 				}

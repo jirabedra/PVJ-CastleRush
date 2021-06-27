@@ -182,6 +182,11 @@ class LevelTwo extends State {
 		hudText.text = "LIVES REMAINING " + princess.livesRemaining;
 	}
 
+	override function destroy() {
+		touchJoystick.destroy();
+		super.destroy();
+	}
+
 	#if DEBUGDRAW
 	override function draw(framebuffer: kha.Canvas) {
 		super.draw(framebuffer);

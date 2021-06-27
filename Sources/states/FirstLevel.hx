@@ -1,5 +1,7 @@
 package states;
 
+import com.soundLib.SoundManager;
+import com.loading.basicResources.SoundLoader;
 import com.loading.basicResources.FontLoader;
 import com.gEngine.display.Text;
 import com.collision.platformer.Sides;
@@ -68,11 +70,16 @@ class FirstLevel extends State {
 		]));
 
 		atlas.add(new FontLoader("Kenney_Thick", 20));
-
+		
 		resources.add(atlas);
+		resources.add(new SoundLoader("background_music", false));
+		resources.add(new SoundLoader("jump_fx"));
+		resources.add(new SoundLoader("dragon_death_fx"));
 	}
 
 	override function init() {
+		SoundManager.playMusic("background_music");
+
 		stageColor(0.5, .5, 0.5);
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
@@ -202,6 +209,13 @@ class FirstLevel extends State {
 
 		hudText.x = stage.defaultCamera().eye.x - stage.defaultCamera().screenWidth() / 2 + 48;
 		hudText.text = "LIVES REMAINING " + princess.livesRemaining;
+	}
+
+	override function destroy() {
+		SoundManager.stopMusic();
+		SoundManager.reset();
+		touchJoystick.destroy();
+		super.destroy();
 	}
 
 	#if DEBUGDRAW
