@@ -1,9 +1,8 @@
 package states;
 
+import kha.input.KeyCode;
 import com.soundLib.SoundManager;
 import com.loading.basicResources.SoundLoader;
-import com.gEngine.helper.Screen;
-import kha.input.KeyCode;
 import com.framework.utils.Input;
 import com.gEngine.display.Text;
 import com.loading.basicResources.FontLoader;
@@ -27,19 +26,19 @@ class GameOver extends State {
     stageColor(0.5,0.5,0.5);
 
     var gameOverText = new Text("Kenney_Thick");
-    gameOverText.x = Screen.getWidth() * 0.5 - 150;
-    gameOverText.y = Screen.getHeight() * 0.5;
+    gameOverText.x = 1280 * 0.5 - 150;
+    gameOverText.y = 720 * 0.5;
     gameOverText.text = "Game Over";
 
     var continueText = new Text("Kenney_Thick");
-    continueText.x = Screen.getWidth() * 0.5 - 150;
-    continueText.y = Screen.getHeight() * 0.5 + 50;
+    continueText.x = 1280 * 0.5 - 150;
+    continueText.y = 720 * 0.5 + 50;
     continueText.text = "Press space to play again" ; 
 
     stage.addChild(gameOverText);
     stage.addChild(continueText);
 
-    // SoundManager.playFx("game_over_fx");
+    SoundManager.playFx("game_over_fx");
   }
 
   override function update(dt: Float) {

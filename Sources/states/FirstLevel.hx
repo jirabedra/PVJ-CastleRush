@@ -1,5 +1,6 @@
 package states;
 
+import com.gEngine.display.Sprite;
 import com.soundLib.SoundManager;
 import com.loading.basicResources.SoundLoader;
 import com.loading.basicResources.FontLoader;
@@ -49,6 +50,7 @@ class FirstLevel extends State {
 	}
 
 	override function load(resources: Resources) {
+		resources.keepData = true;
 		resources.add(new DataLoader("firstLevel_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
 
@@ -84,7 +86,7 @@ class FirstLevel extends State {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 
-		worldMap = new Tilemap("firstLevel_tmx", "castle_tileset_part1");
+		worldMap = new Tilemap("firstLevel_tmx");
 		worldMap.init(parseTileLayers, parseMapObjects);
 
 		tray = new Tray(castleMap);
@@ -116,8 +118,8 @@ class FirstLevel extends State {
 			layerTilemap.createCollisions(tileLayer);
 		}
 
-		simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
-		castleMap = layerTilemap.createDisplay(tileLayer);
+		simulationLayer.addChild(layerTilemap.createDisplay(tileLayer, new Sprite("castle_tileset_part1")));
+		castleMap = layerTilemap.createDisplay(tileLayer, new Sprite("castle_tileset_part1"));
 		simulationLayer.addChild(castleMap);
 	}
 

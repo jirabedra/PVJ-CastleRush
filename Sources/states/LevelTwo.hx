@@ -1,5 +1,6 @@
 package states;
 
+import com.gEngine.display.Sprite;
 import gameObjects.Phoenix;
 import com.loading.basicResources.FontLoader;
 import com.gEngine.display.Text;
@@ -70,7 +71,7 @@ class LevelTwo extends State {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 
-		worldMap = new Tilemap("firstLevel_tmx", "castle_tileset_part1");
+		worldMap = new Tilemap("firstLevel_tmx");
 		worldMap.init(parseTileLayers, parseMapObjects);
 
 		tray = new Tray(castleMap);
@@ -102,8 +103,8 @@ class LevelTwo extends State {
 			layerTilemap.createCollisions(tileLayer);
 		}
 
-		simulationLayer.addChild(layerTilemap.createDisplay(tileLayer));
-		castleMap = layerTilemap.createDisplay(tileLayer);
+		simulationLayer.addChild(layerTilemap.createDisplay(tileLayer, new Sprite("castle_tileset_part1")));
+		castleMap = layerTilemap.createDisplay(tileLayer, new Sprite("castle_tileset_part1"));
 		simulationLayer.addChild(castleMap);
 	}
 
