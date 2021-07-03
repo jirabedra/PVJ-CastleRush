@@ -214,8 +214,8 @@ class FirstLevel extends State {
 	}
 
 	override function destroy() {
-		SoundManager.stopMusic();
-		SoundManager.reset();
+		// SoundManager.stopMusic();
+		// SoundManager.reset();
 		touchJoystick.destroy();
 		super.destroy();
 	}

@@ -23,6 +23,7 @@ class GameOver extends State {
   }
 
   override function init() {
+    SoundManager.stopMusic();
     stageColor(0.5,0.5,0.5);
 
     var gameOverText = new Text("Kenney_Thick");
