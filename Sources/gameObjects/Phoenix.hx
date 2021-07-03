@@ -1,5 +1,6 @@
 package gameObjects;
 
+import com.soundLib.SoundManager;
 import kha.math.FastVector2;
 import com.gEngine.display.Layer;
 import com.collision.platformer.CollisionBox;
@@ -61,5 +62,6 @@ class Phoenix extends Entity {
 	override function destroy() {
 		super.destroy();
 		display.removeFromParent();
+		SoundManager.playFx("phoenix_death");
 	}
 }

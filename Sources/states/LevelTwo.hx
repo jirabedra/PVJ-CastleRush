@@ -1,5 +1,6 @@
 package states;
 
+import com.loading.basicResources.SoundLoader;
 import com.gEngine.display.Sprite;
 import gameObjects.Phoenix;
 import com.loading.basicResources.FontLoader;
@@ -64,9 +65,15 @@ class LevelTwo extends State {
 		atlas.add(new FontLoader("Kenney_Thick", 20));
 
 		resources.add(atlas);
+		resources.add(new SoundLoader("background_music", false));
+		resources.add(new SoundLoader("jump_fx"));
+		resources.add(new SoundLoader("phoenix_death"));
 	}
 
 	override function init() {
+		// SoundManager.stopMusic();
+		// SoundManager.playMusic("background_music");
+
 		stageColor(0.5, .5, 0.5);
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);

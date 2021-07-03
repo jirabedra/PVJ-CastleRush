@@ -1,5 +1,6 @@
 package states;
 
+import js.html.Console;
 import com.gEngine.display.Sprite;
 import com.soundLib.SoundManager;
 import com.loading.basicResources.SoundLoader;
@@ -80,7 +81,7 @@ class FirstLevel extends State {
 	}
 
 	override function init() {
-		SoundManager.playMusic("background_music");
+		// SoundManager.playMusic("background_music");
 
 		stageColor(0.5, .5, 0.5);
 		simulationLayer = new Layer();
@@ -214,8 +215,6 @@ class FirstLevel extends State {
 	}
 
 	override function destroy() {
-		// SoundManager.stopMusic();
-		// SoundManager.reset();
 		touchJoystick.destroy();
 		super.destroy();
 	}
