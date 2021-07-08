@@ -1,6 +1,7 @@
 package states;
 
 import com.loading.basicResources.SoundLoader;
+import com.soundLib.SoundManager;
 import com.gEngine.display.Sprite;
 import gameObjects.Phoenix;
 import com.loading.basicResources.FontLoader;
@@ -71,8 +72,8 @@ class LevelTwo extends State {
 	}
 
 	override function init() {
-		// SoundManager.stopMusic();
-		// SoundManager.playMusic("background_music");
+		SoundManager.stopMusic();
+		SoundManager.playMusic("background_music");
 
 		stageColor(0.5, .5, 0.5);
 		simulationLayer = new Layer();
