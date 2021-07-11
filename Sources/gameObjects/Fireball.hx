@@ -39,7 +39,7 @@ class Fireball extends Entity {
 		collision.update(dt);
 
 		if (time > 4) {
-			die();
+			destroy();
 		}
 	}
 
