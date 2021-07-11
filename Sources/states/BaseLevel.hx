@@ -65,8 +65,6 @@ abstract class BaseLevel extends State {
 	}
 
 	override function init() {
-    SoundManager.muteMusic();
-    SoundManager.muteSound();
 		SoundManager.playMusic("background_music");
 
 		stageColor(0.5, .5, 0.5);

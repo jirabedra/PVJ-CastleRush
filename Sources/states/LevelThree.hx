@@ -1,7 +1,6 @@
 package states;
 
 import com.collision.platformer.CollisionEngine;
-import js.html.Console;
 import gameObjects.Dragon;
 import controllers.DragonController;
 import controllers.PhoenixController;
@@ -89,8 +88,7 @@ class LevelThree extends BaseLevel {
 		phoenixController.update(dt, addChild, changeState);
 
     if (CollisionEngine.overlap(princess.collision, winZone)) {
-			// changeState(new LevelTwo());
-      Console.log("You won! I'm still making the screen for that xd");
+			changeState(new Victory());
 		}
 	}
 }
