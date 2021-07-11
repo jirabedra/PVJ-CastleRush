@@ -72,7 +72,11 @@ class DragonController {
 			}
 	
 			CollisionEngine.collide(princess.collision, dragon.collision, (princessC, dragonC) -> {
-				if (dragon.collision.isTouching(Sides.TOP)) {
+				if (princess.powerfulAf || dragon.collision.isTouching(Sides.TOP)) {
+					if (!dragon.collision.isTouching(Sides.TOP)) {
+						princess.powerfulAf = false;
+					}
+
 					dragon.die();
 					dragon = null;
 				}

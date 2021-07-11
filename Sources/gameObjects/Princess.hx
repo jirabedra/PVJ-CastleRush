@@ -12,6 +12,7 @@ class Princess extends Entity {
 	public var display: Sprite;
 	public var collision: CollisionBox;
 	public var livesRemaining = 3;
+	public var powerfulAf = false;
 
 	var maxSpeed = 200;
 
@@ -150,7 +151,10 @@ class Princess extends Entity {
 				die();
 			}
 		}
+	}
 
+	public inline function powerup() {
+		powerfulAf = true;
 	}
 
 	public function onAxisChange(id: Int, value: Float) {}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="114" height="46" tilewidth="16" tileheight="16" infinite="0" nextlayerid="22" nextobjectid="21">
+<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="114" height="46" tilewidth="16" tileheight="16" infinite="0" nextlayerid="22" nextobjectid="22">
  <tileset firstgid="1" name="castle_tileset_part1" tilewidth="16" tileheight="16" tilecount="2688" columns="32">
   <image source="castle_tileset_part1.png" width="512" height="1344"/>
  </tileset>
@@ -157,7 +157,8 @@
 </data>
  </layer>
  <objectgroup id="11" name="Object Layer 1" locked="1">
-  <object id="13" name="playerPosition" x="214.534" y="660.44" width="18" height="33"/>
+  <object id="13" name="powerupPosition" x="1450.53" y="260.44" width="18" height="33"/>
+  <object id="21" name="playerPosition" x="214.534" y="660.44" width="18" height="33"/>
   <object id="15" name="winZone" x="1720.69" y="128.789" width="87.9603" height="35.8637"/>
   <object id="16" name="phoenixPosition" x="427.051" y="373.015" width="18" height="33"/>
   <object id="20" name="dragonPosition" x="1562.3" y="130.78" width="18" height="33"/>

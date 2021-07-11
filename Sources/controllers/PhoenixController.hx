@@ -58,7 +58,11 @@ class PhoenixController {
 			}
 	
 			if (CollisionEngine.collide(princess.collision, phoenix.collision)) {
-				if (phoenix.collision.isTouching(Sides.TOP)) {
+				if (princess.powerfulAf || phoenix.collision.isTouching(Sides.TOP)) {
+          if (!phoenix.collision.isTouching(Sides.TOP)) {
+            princess.powerfulAf = false;
+          }
+
 					phoenix.die();
 					phoenix = null;
 				} else if (phoenix.collision.isTouching(Sides.LEFT) || phoenix.collision.isTouching(Sides.RIGHT)) {

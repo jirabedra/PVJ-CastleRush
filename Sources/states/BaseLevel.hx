@@ -1,5 +1,7 @@
 package states;
 
+import controllers.ApplePowerupController;
+import gameObjects.Apple;
 import com.gEngine.display.Sprite;
 import com.soundLib.SoundManager;
 import com.loading.basicResources.SoundLoader;
@@ -29,10 +31,11 @@ abstract class BaseLevel extends State {
   var tmxName: String;
 	var worldMap: Tilemap;
 	var princess: Princess;
+	var apple: Apple;
 	var hudText: Text;
-	
 	var winZone: CollisionBox;
 	var deathZone: CollisionBox;
+	var applePowerupController = new ApplePowerupController();
 
 	var simulationLayer: Layer;
 	var touchJoystick: VirtualGamepad;
@@ -62,9 +65,13 @@ abstract class BaseLevel extends State {
 		resources.add(atlas);
 		resources.add(new SoundLoader("background_music", false));
 		resources.add(new SoundLoader("jump_fx"));
+
+		applePowerupController.load(resources);
 	}
 
 	override function init() {
+		SoundManager.muteMusic();
+		SoundManager.muteSound();
 		SoundManager.playMusic("background_music");
 
 		stageColor(0.5, .5, 0.5);
@@ -113,6 +120,7 @@ abstract class BaseLevel extends State {
 			case "playerposition":
 				if (princess == null) {
 					princess = new Princess(object.x, object.y, simulationLayer);
+					applePowerupController.setPrincess(princess);
 					addChild(princess);
 				}
 
@@ -130,6 +138,12 @@ abstract class BaseLevel extends State {
 				winZone.width = object.width;
 				winZone.height = object.height;
 
+			case "powerupposition":
+				if (apple == null) {
+					apple = new Apple(object.x, object.y, simulationLayer);
+					applePowerupController.setApple(apple);
+					addChild(apple);
+				}
 		}
 	}
 
@@ -146,6 +160,8 @@ abstract class BaseLevel extends State {
 
 		hudText.x = stage.defaultCamera().eye.x - stage.defaultCamera().screenWidth() / 2 + 48;
 		hudText.text = "LIVES REMAINING " + princess.livesRemaining;
+
+		applePowerupController.update(dt, addChild, changeState);
 	}
 
 	override function destroy() {
