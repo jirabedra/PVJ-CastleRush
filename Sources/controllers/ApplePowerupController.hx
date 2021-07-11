@@ -34,7 +34,7 @@ class ApplePowerupController {
       return;
     }
 
-    if (CollisionEngine.collide(princess.collision, apple.collision)) {
+    if (CollisionEngine.overlap(princess.collision, apple.collision)) {
       apple.destroy();
       apple = null;
 

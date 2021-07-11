@@ -24,7 +24,6 @@ class Apple extends Entity {
 		display.scaleX = display.scaleY = 1;
 		collision.x = x;
 		collision.y = y;
-    collision.staticObject = false;
 
 		collision.userData = this;
 	}
