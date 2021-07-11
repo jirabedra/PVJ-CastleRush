@@ -59,9 +59,13 @@ class Phoenix extends Entity {
 		collision.accelerationX = dir.x * 100;
 	}
 
+	override function die() {
+		super.die();
+		SoundManager.playFx("phoenix_death");
+	}
+
 	override function destroy() {
 		super.destroy();
 		display.removeFromParent();
-		SoundManager.playFx("phoenix_death");
 	}
 }

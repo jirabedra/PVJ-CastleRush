@@ -44,7 +44,6 @@ class Dragon extends Entity {
 		collision.maxVelocityX = 500;
 		collision.maxVelocityY = 800;
 		collision.dragX = 0.9;
-		collision.staticObject = true;
 	}
 
 	override function update(dt: Float) {
@@ -68,10 +67,6 @@ class Dragon extends Entity {
 	}
 
 	public inline function attack(target: Princess): Bool {
-		if (isDead()) {
-			return false;
-		}
-
 		isAttacking = true;
 		return !hasThrownFirstFireball || timeSinceLastFireball > 1.5;
 	}
@@ -85,9 +80,13 @@ class Dragon extends Entity {
 		timeSinceLastFireball = 0;
 	}
 
+	override function die() {
+		super.die();
+		SoundManager.playFx("dragon_death_fx");
+	}
+
 	override function destroy() {
 		super.destroy();
 		display.removeFromParent();
-		SoundManager.playFx("dragon_death_fx");
 	}
 }

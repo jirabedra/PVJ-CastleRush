@@ -29,7 +29,7 @@ import com.loading.basicResources.JoinAtlas;
 import com.loading.Resources;
 import com.framework.utils.State;
 
-class FirstLevel extends State {
+class LevelOne extends State {
 	var worldMap: Tilemap;
 	var princess: Princess;
 	var dragon: Dragon;
@@ -51,7 +51,7 @@ class FirstLevel extends State {
 
 	override function load(resources: Resources) {
 		resources.keepData = true;
-		resources.add(new DataLoader("firstLevel_tmx"));
+		resources.add(new DataLoader("levelOne_tmx"));
 		var atlas = new JoinAtlas(2048, 2048);
 
 		atlas.add(new TilesheetLoader("castle_tileset_part1", 16, 16, 0));
@@ -86,7 +86,7 @@ class FirstLevel extends State {
 		simulationLayer = new Layer();
 		stage.addChild(simulationLayer);
 
-		worldMap = new Tilemap("firstLevel_tmx");
+		worldMap = new Tilemap("levelOne_tmx");
 		worldMap.init(parseTileLayers, parseMapObjects);
 
 		tray = new Tray(castleMap);
@@ -193,7 +193,7 @@ class FirstLevel extends State {
 			CollisionEngine.overlap(princess.collision, fireballCollisionGroup, (fireballC, princessC) -> {
 				var fireball: Fireball = cast fireballC.userData;
 				fireball.destroy();
-				princess.takeDamage();
+				princess.takeDamage(dt);
 	
 				if (princess.isDead()) {
 					changeState(new GameOver());

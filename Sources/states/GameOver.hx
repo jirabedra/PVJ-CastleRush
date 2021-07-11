@@ -46,7 +46,7 @@ class GameOver extends State {
     super.update(dt);
 
     if(Input.i.isKeyCodePressed(KeyCode.Space)){
-      changeState(new FirstLevel());
+      changeState(new LevelOne());
     }
   }
 }

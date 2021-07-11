@@ -158,9 +158,9 @@
  </layer>
  <objectgroup id="11" name="Object Layer 1" locked="1">
   <object id="13" name="playerPosition" x="47.5948" y="600.69" width="18" height="33"/>
-  <object id="15" name="winZone" x="1720.69" y="69" width="35" height="25"/>
-  <object id="16" name="enemyPosition" x="1330.16" y="200.31" width="18" height="33"/>
-  <object id="17" name="deathZone" x="735.49" y="700.32" width="816" height="36"/>
-  <object id="18" name="dangerZone" x="1121.37" y="169.383" width="254.122" height="71.9349"/>
+  <object id="15" name="winZone" x="1720.69" y="69" width="35" height="25" visible="0"/>
+  <object id="18" name="dangerZone" x="1121.37" y="169.383" width="254.122" height="71.9349" visible="0"/>
+  <object id="16" name="enemyPosition" x="1330.16" y="190.31" width="18" height="33"/>
+  <object id="17" name="deathZone" x="735.49" y="700.32" width="816" height="36" visible="0"/>
  </objectgroup>
 </map>
